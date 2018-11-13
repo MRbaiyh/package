@@ -1,0 +1,210 @@
+##reduce
+-reduce需要导入functools包 
+-reduce([1,2,3,4,5]) = f(f(f(f(1,2)3)4)5)
+'''
+    from functools import reduce
+    def myAdd(x,y):
+        return x + y
+    rst = reduce( myAdd, [1,2,3,4,5])
+    print(rst)
+'''
+>>>21
+
+##filter 函数
+-过滤函数：对一组数据进行过滤，符合条件的数据会生成一个新的列表返回
+-跟map比较：
+    - 相同：都对列表的每一个元素逐一进行操作
+    - 不同：
+        - map会生成一个跟原来数据相对应的新队列
+        - filter不一定，只要符合条件的才会进入新的数据集合
+    - filter函数写法：
+        - 利用给定函数进行判断
+        - 返回值一定是布尔值
+        - 调用格式：filter(f , data) f是过滤器，data是数据
+
+##闭包(closure)
+- 当一个函数在内部定义函数，并且内部的函数应用外部函数的参数或者局部变量，党内部函数被当做返回值
+的时候，相关参数和变量保存在返回的函数中。
+#闭包常见坑
+def count():
+    fs = []
+    for i in range(1, 4):
+        def f():
+            return i*i
+        fs.append(f)
+    return fs
+出现的问题：
+    - 造成上述状况的原因是，返回函数引用了变量i，i并非立即执行，而是等到三个函数都返回的时候才统一
+    使用，此时i已经变成了3，最终调用的时候，都返回的是 3*3
+    - 返回闭包时，返回函数不能引用任何循环变量
+    - 解决方案：再创建一个函数，用该函数的参数绑定循环变量的当前值，无论该循环变量以后如何改变，已经
+    绑定的函数参数值不再改变
+def count():
+    def f(j):
+        def g():
+            return j*j
+        return g
+    fs = []
+    for i in range(1, 4):
+        fs.append(f(i))
+    return fs
+
+##装饰器(Derator)
+- 在不改动函数代码的基础上无限制扩展函数功能的一种机制，本质上讲，装饰器是一个返回函数的高阶函数
+- 装饰器的使用：使用@语法，即在每次要扩展到函数定义前使用@+函数名
+   例子:
+        import time
+        def printTime(f):
+            def wrapper(*args, **kwargs):
+                print("Time: ", time.ctime())
+                return f(*args, **kwargs)
+            return wrapper
+        
+        @printTime
+        def hello():
+            print("Hello world")
+        hello()
+
+        def hello3()
+            print("我是手动执行的")
+
+        hello3 = printTime(hello3)
+        hello3()
+
+        f = printTime(hello3)
+        f()
+##偏函数
+例子：
+    # 把字符串转换成十进制数字
+    int("12345")
+    int("12345", base = 8)
+    # 新建一个函数，此函数是默认输入的字符串是16进制数字
+    # 把此字符串返回十进制的数字
+        def int16(x, base = 16):
+            return int(x, base)
+        
+        int16("12345")
+
+    -参数固定的函数，相当于一个由特定参数的函数体
+    -functiontools.partial的作用是把一个函数某些函数固定，返回一个新函数
+        import functiontools
+        int16 = functiontools.partial(int, base = 16)
+
+        int16("1234")
+
+## 高阶函数
+#zip
+-把两个可迭代内容生成一个可迭代的tuple元素类型组成的内容
+    zip代码
+        l1 = [1,2,3,4,5]
+        l2 = [11,22,33,44,55]
+        z = zip(l1, l2)
+
+        print(type(z))
+        print(z)
+
+        for i in z:
+            print(i)
+
+#enumerate
+- 对可迭代对象里的每一个元素，配上一个索引，然后索引和内容构成tuple类型
+
+#dequeue
+- 比较方便的解决了频繁删除插入带来的效率问题
+    from collections import deque
+    q = deque(['a','b','c'])
+    print(q)
+
+    q.append("d")
+    print(q)
+
+#defaultdict
+- 当直接读取dict不存在的属性时，直接返回默认值
+
+#lambda
+-lambda表达式，通常是在需要一个函数，但是又不想费神去命名一个函数的场合下使用，也就是指匿名函数。
+
+lambda所表示的匿名函数的内容应该是很简单的，如果复杂的话，干脆就重新定义一个函数了，使用lambda就有点过于执拗了。
+
+lambda就是用来定义一个匿名函数的，如果还要给他绑定一个名字的话，就会显得有点画蛇添足，通常是直接使用lambda函数。如下所示：
+
+add = lambda x, y : x+y
+add(1,2)  # 结果为3
+
+# counter
+- 统计字符串个数
+
+-------------------------------------------------------------------
+
+#  调试技术
+- 调试流程：单元测试->集成测试->交测试部
+- 分类：
+    - 静态调试：
+    - 动态调试：
+
+#  pdb调试（古老）
+
+#  pycharm调试
+- run/debug模式
+- 断点：程序的某一行，程序在debug模式下，遇到断点就会停止。
+
+#文件
+- 长久保存信息的一种数据信息集合
+- 常用操作
+    - 打开关闭（文件一旦打开，需要关闭操作）
+    - 读写内容
+    - 查找
+#OPEN函数
+- open函数负责打开文件，带有很多参数
+- 第一个参数：必须有文件的路径和名称
+- mode：表明文件用什么方式打开
+    - r：只读
+    - w：只写，覆盖以前的内容
+    - x：创建方式打开，如果文件以及存在，报错
+    - a：append方式打开，以追加的方式对文件内容进行写入
+    - b：binary方式，二进制方式写入
+    - t：文本方式打开
+    - +：可读写
+#with
+- with语句使用的技术是一种称为上下文管理协议的技术
+- 自动判断文件的作用域，自动关闭不再使用的打开的文件句柄
+
+##日志相关概念
+-日志的级别
+    -不同的用户关注不同的程序信息
+    -DEBUG
+    -INFO
+    -NOTICE
+    -ERROR
+    -CRITICAL
+    -ALTER
+    -EMERGENCY
+-IO操作=>不要频繁操作
+-LOG的作用
+    -调试
+    -了解软件的运行情况
+    -分析定位问题
+-日志信息
+    -Time
+    -地点
+    -level
+    -内容
+
+# d多线程 vs 多进程
+- 程序：一堆代码以文本形式存入一个文档
+- 进程：程序运行的一个状态
+    - 包含地址空间、内存、数据栈等
+    - 每个进程由自己完全独立的运行环境，多进程共享数据是一个问题
+- 线程
+    - 一个进程的独立运行片段，一个进程可以有多个线程
+    - 轻量化的进程
+    - 一个进程的多个线程间共享数据和上下文运行环境
+    - 共享互斥问题
+- 全局解释器锁（GIL）
+    - Python代码的执行是由python虚拟机进行控制
+    - 在主循环中稚嫩只有一个控制线程进行执行
+
+- Python包
+    - thread: 有问题，不要用， python3改成了_thread
+    - threading：通行的包
+- 案例01
